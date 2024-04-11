@@ -1,5 +1,6 @@
 import React from 'react'
 import NewButton from './NewButton';
+import OrgList from './OrgList';
 
 function SideBar() {
     return (
@@ -17,6 +18,7 @@ function SideBar() {
                 text-white
             '
         >
+            <OrgList />
             <NewButton />
         </aside>
     )
