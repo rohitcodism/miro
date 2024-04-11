@@ -1,4 +1,5 @@
 import React from 'react'
+import NewButton from './NewButton';
 
 function SideBar() {
     return (
@@ -16,7 +17,7 @@ function SideBar() {
                 text-white
             '
         >
-            SideBar
+            <NewButton />
         </aside>
     )
 }
