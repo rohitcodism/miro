@@ -31,7 +31,14 @@ function NewButton() {
                         </button>
                     </div>
                 </DialogTrigger>
-                <DialogContent>
+                <DialogContent
+                    className='
+                        p-0
+                        bg-transparent
+                        border-none
+                        maz-w-[480px]
+                    '
+                >
                     <CreateOrganization />
                 </DialogContent>
             </Dialog>
