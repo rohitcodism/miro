@@ -1,7 +1,12 @@
-import { UserButton } from '@clerk/nextjs';
+import { OrganizationSwitcher, UserButton, useOrganization } from '@clerk/nextjs';
 import React from 'react'
+import SearchInput from './SearchInput';
+import InviteButton from './InviteButton';
 
 function Navbar() {
+
+    const { organization } = useOrganization;
+
     return (
         <div
             className='
@@ -9,7 +14,6 @@ function Navbar() {
                 items-center
                 gap-x-4
                 p-5
-                bg-green-500
             '
         >
             <div
@@ -17,11 +21,41 @@ function Navbar() {
                     hidden
                     lg:flex
                     lg:flex-1
-                    bg-yellow-500
                 '
             >
-                Search
+                <SearchInput />
             </div>
+            <div
+                className="
+                sm:block 
+                lg:hidden 
+                flex-1
+            "
+            >
+                <OrganizationSwitcher
+                    hidePersonal
+                    appearance={{
+                        elements: {
+                            rootBox: {
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                width: "100%",
+                                maxWidth: "376px"
+                            },
+                            organizationSwitcherTrigger: {
+                                padding: "6px",
+                                width: "100%",
+                                borderRadius: "8px",
+                                border: "1px solid #E5E7EB",
+                                justifyContent: "space-between",
+                                backgroundColor: "white",
+                            }
+                        }
+                    }}
+                />
+            </div>
+            {organization ? <InviteButton /> : null}
             <UserButton />
         </div>
     )
