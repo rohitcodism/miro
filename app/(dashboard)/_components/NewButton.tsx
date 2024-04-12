@@ -2,6 +2,7 @@ import React from 'react';
 import { Plus } from 'lucide-react';
 import { CreateOrganization } from '@clerk/nextjs';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import Hint from '@/components/Hint';
 
 function NewButton() {
     return (
@@ -13,8 +14,14 @@ function NewButton() {
                             aspect-square
                         '
                     >
-                        <button
-                            className='
+                        <Hint
+                            label='Create organization'
+                            side='right'
+                            align='center'
+                            sideOffset={18}
+                        >
+                            <button
+                                className='
                                 rounded-full
                                 bg-white/25
                                 h-full
@@ -26,9 +33,10 @@ function NewButton() {
                                 hover:opacity-100
                                 transition
                             '
-                        >
-                            <Plus className='text-white' />
-                        </button>
+                            >
+                                <Plus className='text-white' />
+                            </button>
+                        </Hint>
                     </div>
                 </DialogTrigger>
                 <DialogContent
