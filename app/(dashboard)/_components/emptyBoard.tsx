@@ -1,17 +1,19 @@
 'use client'
 
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import { emptyBoards } from '@/assets';
 import { Button } from '@/components/ui/button';
 import { useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { useOrganization } from '@clerk/nextjs';
+import { useApiMutation } from '@/hooks/useApiMutation';
+import { Loader2 } from 'lucide-react';
 
 function EmptyBoard() {
 
     const { organization } = useOrganization();
-    const create = useMutation(api.board.create);
+    const { mutate, pending } = useApiMutation(api.board.create);
 
     const handleClick = () => {
 
@@ -20,18 +22,15 @@ function EmptyBoard() {
         if(!organization) return;
 
         try {
-            create(
+            mutate(
                 {
                     title: "Untitled",
                     orgId: organization.id
                 }
             )
-            console.log("Try Block Executed!!");
         } catch (error) {
             console.log("Error while creating a board!!", error);
         }
-
-        console.log("Function executed!!")
     }
 
     return (
@@ -74,8 +73,9 @@ function EmptyBoard() {
                 '
                 size={'lg'}
                 onClick={handleClick}
+                disabled={pending}
             >
-                Create a new board
+                {pending ? (<Loader2 className='w-8 h-8 animate-spin' />) : 'Create new board'}
             </Button>
         </div>
     )
