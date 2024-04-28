@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ConvexCLientProvider } from "@/provider/convex-client-provider";
+import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,6 +22,7 @@ export default function RootLayout({
           <ConvexCLientProvider>
             {children}
           </ConvexCLientProvider>
+          <Toaster />
         </body>
       </html>
   );
