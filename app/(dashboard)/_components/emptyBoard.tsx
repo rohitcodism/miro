@@ -31,8 +31,6 @@ function EmptyBoard() {
                 }
             )
 
-            console.log(result);
-
             if(result){
                 toast({
                     title: "Success",
