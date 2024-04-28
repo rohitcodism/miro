@@ -9,27 +9,51 @@ import { api } from '@/convex/_generated/api';
 import { useOrganization } from '@clerk/nextjs';
 import { useApiMutation } from '@/hooks/useApiMutation';
 import { Loader2 } from 'lucide-react';
+import { useToast } from '@/components/ui/use-toast';
 
 function EmptyBoard() {
 
+    const { toast } = useToast();
+
     const { organization } = useOrganization();
+
     const { mutate, pending } = useApiMutation(api.board.create);
 
-    const handleClick = () => {
-
-        console.log("Button Clicked!!")
+    const handleClick = async() => {
 
         if(!organization) return;
 
         try {
-            mutate(
+            const result = await mutate(
                 {
                     title: "Untitled",
                     orgId: organization.id
                 }
             )
+
+            console.log(result);
+
+            if(result){
+                toast({
+                    title: "Success",
+                    description: "New board created successfully",
+                })
+            }else{
+                toast({
+                    title: "Error",
+                    description: "Something went wrong",
+                    variant: "destructive"
+                })
+            }
+
+
         } catch (error) {
             console.log("Error while creating a board!!", error);
+            toast({
+                title: "Error",
+                description: "Something went wrong",
+                variant: "destructive"
+            })
         }
     }
 
