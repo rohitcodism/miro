@@ -1,22 +1,23 @@
+
 import { mutation } from './_generated/server';
 import { v } from 'convex/values';
 
 const images = [
-    "../assets/placeholders/1.svg",
-    "../assets/placeholders/2.svg",
-    "../assets/placeholders/3.svg",
-    "../assets/placeholders/4.svg",
-    "../assets/placeholders/5.svg",
-    "../assets/placeholders/6.svg",
-    "../assets/placeholders/7.svg",
-    "../assets/placeholders/8.svg",
-    "../assets/placeholders/9.svg",
-    "../assets/placeholders/10.svg",
-    "../assets/placeholders/11.svg",
-    "../assets/placeholders/12.svg",
-    "../assets/placeholders/13.svg",
-    "../assets/placeholders/14.svg",
-    "../assets/placeholders/15.svg",
+    "../public/placeholders/1.svg",
+    "../public/placeholders/2.svg",
+    "../public/placeholders/3.svg",
+    "../public/placeholders/4.svg",
+    "../public/placeholders/5.svg",
+    "../public/placeholders/6.svg",
+    "../public/placeholders/7.svg",
+    "../public/placeholders/8.svg",
+    "../public/placeholders/9.svg",
+    "../public/placeholders/10.svg",
+    "../public/placeholders/11.svg",
+    "../public/placeholders/12.svg",
+    "../public/placeholders/13.svg",
+    "../public/placeholders/14.svg",
+    "../public/placeholders/15.svg",
 ]
 
 export const create = mutation(
