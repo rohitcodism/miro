@@ -9,6 +9,7 @@ import { useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { Loader2 } from 'lucide-react';
 import { BoardCard } from './BoardCard';
+import { NewBoardButton } from './newBoardButton';
 
 interface BoardListProps {
     orgId: string,
@@ -74,6 +75,7 @@ function BoardList({orgId, query}: BoardListProps) {
                     pb-10
                 '
             >
+                <NewBoardButton orgId={orgId} disabled={false}/>
                 {
                     data.map((board) => (
                         <BoardCard 
