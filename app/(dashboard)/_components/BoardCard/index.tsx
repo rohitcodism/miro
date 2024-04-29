@@ -6,6 +6,7 @@ import { Overlay } from "./overlay";
 import { formatDistanceToNow } from 'date-fns';
 import { useAuth } from "@clerk/nextjs";
 import { Footer } from "./footer";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface BoardCardProps {
     id: string,
@@ -17,7 +18,7 @@ interface BoardCardProps {
     isFavorite: boolean,
 }
 
-export const BoardCard = ({id, title, imageUrl, authorId, authorName, at, isFavorite}: BoardCardProps) => {
+export const BoardCard = ({ id, title, imageUrl, authorId, authorName, at, isFavorite }: BoardCardProps) => {
 
     const { userId } = useAuth();
 
@@ -28,7 +29,7 @@ export const BoardCard = ({id, title, imageUrl, authorId, authorName, at, isFavo
     })
 
 
-    return(
+    return (
         <Link
             href={`/board/${id}`}
         >
@@ -51,7 +52,7 @@ export const BoardCard = ({id, title, imageUrl, authorId, authorName, at, isFavo
                         bg-amber-50
                     "
                 >
-                    <Image 
+                    <Image
                         src={imageUrl}
                         alt={title}
                         fill
@@ -64,10 +65,24 @@ export const BoardCard = ({id, title, imageUrl, authorId, authorName, at, isFavo
                     isFavorite={isFavorite}
                     authorLabel={authorLabel}
                     createdAtLabel={createdAtLabel}
-                    onClick={() => {}}
+                    onClick={() => { }}
                     disabled={false}
                 />
             </div>
         </Link>
+    );
+}
+
+BoardCard.Skeleton = function BoardCardSkeleton() {
+    return(
+        <div
+        className="
+            aspect-[100/127]
+            rounded-lg
+            overflow-hidden
+        "
+        >
+            <Skeleton className="h-full w-full" />
+        </div>
     );
 }

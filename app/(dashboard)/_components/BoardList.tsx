@@ -13,41 +13,61 @@ import { NewBoardButton } from './newBoardButton';
 
 interface BoardListProps {
     orgId: string,
-    query:{
+    query: {
         search?: string,
         favorites?: string,
     },
 }
 
-function BoardList({orgId, query}: BoardListProps) {
+function BoardList({ orgId, query }: BoardListProps) {
 
-    const data = useQuery(api.boards.get, {orgId})
+    const data = useQuery(api.boards.get, { orgId })
 
-    if(data === undefined){
-        return(
-            <div
-                className='min-w-[100%] min-h-[100%] flex justify-center items-center'
-            >
-                <Loader2  
+    if (data === undefined) {
+        return (
+            <div>
+                <h2
                     className='
-                        w-16
-                        h-16
-                        animate-spin
-                    '
-                />
+                    text-3xl
+                    font-bold
+                '
+                >
+                    {query.favorites ? "Favorite boards" : "Team boards"}
+                </h2>
+                <div
+                    className='
+                    grid
+                    grid-cols-1
+                    sm:grid-cols-1
+                    md:grid-cols-4
+                    lg:grid-cols-4
+                    xl:grid-cols-5
+                    2xl:grid-cols-6
+                    gap-5
+                    mt-8
+                    pb-10
+                '
+                >
+                    <NewBoardButton orgId={orgId} disabled={true} />
+                    <BoardCard.Skeleton />
+                    <BoardCard.Skeleton />
+                    <BoardCard.Skeleton />
+                    <BoardCard.Skeleton />
+                    <BoardCard.Skeleton />
+                </div>
             </div>
         );
     }
 
-    if(!data?.length && query.search){
+    if (!data?.length && query.search) {
         return <EmptySearch />
     }
 
-    if(!data?.length && query.favorites){
+    if (!data?.length && query.favorites) {
         return <EmptyFavorites />
     }
 
-    if(!data?.length){
+    if (!data?.length) {
         return <EmptyBoard />
     }
 
@@ -75,10 +95,10 @@ function BoardList({orgId, query}: BoardListProps) {
                     pb-10
                 '
             >
-                <NewBoardButton orgId={orgId} disabled={false}/>
+                <NewBoardButton orgId={orgId} disabled={false} />
                 {
                     data.map((board) => (
-                        <BoardCard 
+                        <BoardCard
                             key={board._id}
                             id={board._id}
                             title={board.title}
