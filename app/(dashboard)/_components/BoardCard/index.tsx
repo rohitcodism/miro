@@ -2,6 +2,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import svg13 from "../../../../public/placeholders/13.svg";
+import { Overlay } from "./overlay";
+import { formatDistanceToNow } from 'date-fns';
+import { useAuth } from "@clerk/nextjs";
+import { Footer } from "./footer";
 
 interface BoardCardProps {
     id: string,
@@ -15,11 +19,13 @@ interface BoardCardProps {
 
 export const BoardCard = ({id, title, imageUrl, authorId, authorName, at, isFavorite}: BoardCardProps) => {
 
-    const refactoredImageUrl = "../../../".concat(imageUrl);
+    const { userId } = useAuth();
 
-    console.log(imageUrl);
+    const authorLabel = userId === authorId ? "you" : authorName;
 
-    console.log(refactoredImageUrl);
+    const createdAtLabel = formatDistanceToNow(at, {
+        addSuffix: true,
+    })
 
 
     return(
@@ -46,12 +52,21 @@ export const BoardCard = ({id, title, imageUrl, authorId, authorName, at, isFavo
                     "
                 >
                     <Image 
-                        src={refactoredImageUrl}
+                        src={imageUrl}
                         alt={title}
                         fill
                         className="object-fit"
                     />
+                    <Overlay />
                 </div>
+                <Footer
+                    title={title}
+                    isFavorite={isFavorite}
+                    authorLabel={authorLabel}
+                    createdAtLabel={createdAtLabel}
+                    onClick={() => {}}
+                    disabled={false}
+                />
             </div>
         </Link>
     );
