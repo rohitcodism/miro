@@ -36,7 +36,7 @@ export const BoardCard = ({ id, title, imageUrl, authorId, authorName, at, isFav
             <div
                 className="
                     group
-                    aspect-[100/127]
+                    aspect-[127/127]
                     border
                     rounded-lg
                     flex
@@ -77,7 +77,7 @@ BoardCard.Skeleton = function BoardCardSkeleton() {
     return(
         <div
         className="
-            aspect-[100/127]
+            aspect-[127/127]
             rounded-lg
             overflow-hidden
         "

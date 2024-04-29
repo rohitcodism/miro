@@ -91,7 +91,7 @@ export const NewBoardButton = (
                     className={`
                     group
                     col-span-1
-                    aspect-[100/127]
+                    aspect-[127/127]
                     border
                     rounded-lg
                     flex
@@ -104,8 +104,7 @@ export const NewBoardButton = (
                     bg-opacity-80
                     hover:bg-indigo-700
                     hover:transition
-                    ${pending && 'opacity-75 cursor-not-allowed'}
-                    cursor-pointer
+                    ${pending || disabled ? "opacity-75 cursor-not-allowed" : "cursor-pointer"}
                 `}
                 >
                     <p
