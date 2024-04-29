@@ -29,8 +29,6 @@ export const create = mutation(
         handler: async(ctx, args) => {
             const identity = await ctx.auth.getUserIdentity();
 
-            console.log("Create Mutation Called!!");
-
             if(!identity){
                 throw new Error("Unauthorized!!");
             }
@@ -43,8 +41,63 @@ export const create = mutation(
                 authorName: identity.name || "",
                 imageUrl: randomImage
             });
-            console.log("Board created successfully!!");
             return board;
         },
+    }
+)
+
+export const remove = mutation(
+    {
+        args: {
+            id: v.id('boards'),
+        },
+        handler: async(ctx, args) => {
+            const identity = await ctx.auth.getUserIdentity();
+
+            if(!identity){
+                throw new Error("Unauthorized!!");
+            }
+
+            const board = await ctx.db.get(args.id);
+
+            if(!board){
+                throw new Error("Item not found");
+            }
+
+            // TODO: Later check to delete favorite user relation as well
+
+            await ctx.db.delete(args.id);
+        }
+    }
+);
+
+
+export const editTitle = mutation(
+    {
+        args:{
+            id: v.id("boards"),
+            title: v.string()
+        },
+        handler: async(ctx, args) => {
+
+            const identity = await ctx.auth.getUserIdentity();
+
+            if(!identity){
+                throw new Error("Unauthorized!!");
+            }
+
+            const board = await ctx.db.get(args.id);
+
+            if(!board){
+                throw new Error("Item not found!!");
+            }
+
+            try {
+                await ctx.db.patch(args.id, { title: args.title })
+            } catch (error) {
+                throw new Error("Something went wrong in editing title")
+            }
+
+        }
     }
 )
