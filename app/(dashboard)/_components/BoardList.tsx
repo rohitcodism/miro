@@ -106,7 +106,7 @@ function BoardList({ orgId, query }: BoardListProps) {
                             authorId={board.authorId}
                             authorName={board.authorName}
                             at={board._creationTime}
-                            isFavorite={false}
+                            isFavorite={board.isFavorite}
                         />
                     ))
                 }
