@@ -44,7 +44,28 @@ export const Actions = (
     const handleSave = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        editTitle({ id: id as Id<'boards'>, title: formData.title })
+        const newTitle = formData.title;
+
+        try {
+            editTitle({ id: id as Id<'boards'>, title: formData.title })
+
+                .then(() => toast({
+                    title: "Renamed!",
+                    description: `${title} board renamed to ${newTitle} board`
+                }))
+                .catch(() => toast({
+                    title: "Error!",
+                    description: `Something went wrong while renaming the ${title} board`,
+                    variant: 'destructive'
+                }))
+
+        } catch (error) {
+            toast({
+                title: "Error!",
+                description: `Something went wrong while renaming the ${title} board`,
+                variant: 'destructive'
+            })
+        }
 
         formData.title = "";
     };
@@ -121,30 +142,6 @@ export const Actions = (
                                 Copy board link
                             </div>
                         </DropdownMenuItem>
-                        <ConfirmModal
-                            header='Do you really want to delete this board ?'
-                            description={`This will delete the ${title} board and all of its content`}
-                            disabled={false}
-                            onConfirm={onDelete}
-                        >
-                            <Button
-                                variant={'ghost'}
-
-                                className='
-                                    p-3
-                                    cursor-pointer
-                                    text-sm
-                                    w-full
-                                    justify-start
-                                    font-normal
-                                '
-                            >
-                                <div className="group flex items-center group-hover:text-red-500 transition-colors">
-                                    <Trash2 className="h-4 w-4 mr-2" />
-                                    Delete
-                                </div>
-                            </Button>
-                        </ConfirmModal>
                         <DialogTrigger
                             className='w-full'
                             onClick={(e) => e.stopPropagation()}
@@ -189,6 +186,30 @@ export const Actions = (
                                 </div>
                             </form>
                         </DialogContent>
+                        <ConfirmModal
+                            header='Do you really want to delete this board ?'
+                            description={`This will delete the ${title} board and all of its content`}
+                            disabled={false}
+                            onConfirm={onDelete}
+                        >
+                            <Button
+                                variant={'ghost'}
+
+                                className='
+                                    p-3
+                                    cursor-pointer
+                                    text-sm
+                                    w-full
+                                    justify-start
+                                    font-normal
+                                '
+                            >
+                                <div className="group flex items-center group-hover:text-red-500 transition-colors">
+                                    <Trash2 className="h-4 w-4 mr-2" />
+                                    Delete
+                                </div>
+                            </Button>
+                        </ConfirmModal>
                     </DropdownMenuContent>
                 </DropdownMenu>
             </Dialog>
