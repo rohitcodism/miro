@@ -4,11 +4,15 @@ import Link from "next/link";
 import svg13 from "../../../../public/placeholders/13.svg";
 import { Overlay } from "./overlay";
 import { formatDistanceToNow } from 'date-fns';
-import { useAuth } from "@clerk/nextjs";
+import { useAuth, useOrganization } from "@clerk/nextjs";
 import { Footer } from "./footer";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Actions } from "@/components/Actions";
 import { MoreHorizontal } from "lucide-react";
+import { useApiMutation } from "@/hooks/useApiMutation";
+import { api } from "@/convex/_generated/api";
+import { useToast } from "@/components/ui/use-toast";
+import { Id } from '@/convex/_generated/dataModel';
 
 interface BoardCardProps {
     id: string,
@@ -22,13 +26,65 @@ interface BoardCardProps {
 
 export const BoardCard = ({ id, title, imageUrl, authorId, authorName, at, isFavorite }: BoardCardProps) => {
 
+    const { toast } = useToast();
+
     const { userId } = useAuth();
+
+    const { organization } = useOrganization();
+
+    const orgId = organization?.id;
 
     const authorLabel = userId === authorId ? "you" : authorName;
 
     const createdAtLabel = formatDistanceToNow(at, {
         addSuffix: true,
     })
+
+    const {
+        mutate: onFavorite,
+        pending: pendingFavorite
+    } = useApiMutation(api.board.doFavorite)
+
+    const {
+        mutate: onUnfavorite,
+        pending: pendingUnfavorite
+    } = useApiMutation(api.board.undoFavorite);
+
+    const toggleFavorite = () => {
+
+        if(isFavorite){
+            onUnfavorite({ boardId: id as Id<"boards"> })
+            .then(() => toast(
+                {
+                    title: "Removed from favorites",
+                    description: `${title} board removed from your favorites`
+                }
+            ))
+            .catch((err) => {
+                    console.log("Error in favs : ", err)
+                toast(
+                {
+                    title: "Oops!",
+                    description: `Something went wrong in removing ${title} board from your favorites`
+                }
+            )})
+        }else{
+            onFavorite({ boardId: id as Id<"boards">, orgId })
+            .then(() => toast(
+                {
+                    title: "Added to favorites",
+                    description: `${title} board added to your favorites`
+                }
+            ))
+            .catch(() => toast(
+                {
+                    title: "Oops!",
+                    description: `Something went wrong in adding ${title} board to your favorites`
+                }
+            ))
+        }
+
+    }
 
 
     return (
@@ -91,8 +147,8 @@ export const BoardCard = ({ id, title, imageUrl, authorId, authorName, at, isFav
                     isFavorite={isFavorite}
                     authorLabel={authorLabel}
                     createdAtLabel={createdAtLabel}
-                    onClick={() => { }}
-                    disabled={false}
+                    onClick={toggleFavorite}
+                    disabled={pendingFavorite || pendingUnfavorite}
                 />
             </div>
         </Link>
