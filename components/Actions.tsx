@@ -92,7 +92,7 @@ export const Actions = (
         remove({ id: id as Id<"boards"> })
             .then(() => toast({
                 title: "Deleted",
-                description: `Success fully deleted ${title} board`
+                description: `Successfully deleted ${title} board`
             }))
             .catch(() => toast({
                 title: "Oops!",
