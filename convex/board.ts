@@ -68,7 +68,17 @@ export const remove = mutation(
                 throw new Error("Item not found");
             }
 
-            // TODO: Later check to delete favorite user relation as well
+            const existingDeleteAbleBoardInFavorites = await ctx.db.query('userFavorites')
+            .withIndex('by_user_board', (q) =>
+                q
+                .eq('userId', identity.subject)
+                .eq('boardId', board._id)
+            )
+            .unique()
+
+            if(existingDeleteAbleBoardInFavorites){
+                await ctx.db.delete(existingDeleteAbleBoardInFavorites._id);
+            }
 
             await ctx.db.delete(args.id);
         }
@@ -129,10 +139,9 @@ export const doFavorite = mutation(
 
             const existingFavorite = await ctx.db
             .query('userFavorites')
-            .withIndex('by_user_board_org', (q) => 
+            .withIndex('by_user_board', (q) => 
                 q.eq("userId", userId)
                 .eq("boardId", board._id)
-                .eq("orgId", args.orgId)
             )
             .unique()
 
