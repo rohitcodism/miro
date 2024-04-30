@@ -52,6 +52,10 @@ export const remove = mutation(
             id: v.id('boards'),
         },
         handler: async(ctx, args) => {
+
+
+            //TODO: Make the delete function more secure and more authorized
+
             const identity = await ctx.auth.getUserIdentity();
 
             if(!identity){
@@ -96,6 +100,96 @@ export const editTitle = mutation(
                 await ctx.db.patch(args.id, { title: args.title })
             } catch (error) {
                 throw new Error("Something went wrong in editing title")
+            }
+
+        }
+    }
+)
+
+export const doFavorite = mutation(
+    {
+        args: {
+            boardId: v.id("boards"),
+            orgId: v.string()
+        },
+        handler: async(ctx, args) => {
+            const userIdentity = await ctx.auth.getUserIdentity();
+
+            if(!userIdentity){
+                throw new Error("Unauthorized!!")
+            }
+
+            const board = await ctx.db.get(args.boardId);
+
+            if(!board){
+                throw new Error("Item not found!!");
+            }
+
+            const userId = userIdentity?.subject;
+
+            const existingFavorite = await ctx.db
+            .query('userFavorites')
+            .withIndex('by_user_board_org', (q) => 
+                q.eq("userId", userId)
+                .eq("boardId", board._id)
+                .eq("orgId", args.orgId)
+            )
+            .unique()
+
+            if(existingFavorite){
+                throw new Error("Board already favorited")
+            }
+
+            const newFavoriteBoardId = await ctx.db.insert("userFavorites", {
+                orgId: args.orgId,
+                userId: userId,
+                boardId: board._id
+            })
+
+            if(!newFavoriteBoardId){
+                throw new Error("Error! in favoriting the board")
+            }
+
+        }
+    }
+)
+
+export const undoFavorite = mutation(
+    {
+        args: {
+            boardId: v.id("boards"),
+        },
+        handler: async(ctx, args) => {
+            const userIdentity = await ctx.auth.getUserIdentity();
+
+            if(!userIdentity){
+                throw new Error("Unauthorized!!")
+            }
+
+            const board = await ctx.db.get(args.boardId);
+
+            if(!board){
+                throw new Error("Item not found!!");
+            }
+
+            const userId = userIdentity?.subject;
+
+            const existingFavorite = await ctx.db //* Flag */
+            .query('userFavorites')
+            .withIndex('by_user_board', (q) => 
+                q.eq("userId", userId)
+                .eq("boardId", args.boardId)
+            )
+            .unique()
+
+            if(!existingFavorite){
+                throw new Error("Board is not in the favorited list")
+            }
+
+            try {
+                await ctx.db.delete(existingFavorite._id)
+            } catch (error) {
+                throw new Error("Error! in removing a board from favorites")
             }
 
         }
