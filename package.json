@@ -11,6 +11,7 @@
   "dependencies": {
     "@clerk/nextjs": "^4.30.0",
     "@hookform/resolvers": "^3.3.4",
+    "@liveblocks/node": "^1.11.3",
     "@radix-ui/react-alert-dialog": "^1.0.5",
     "@radix-ui/react-dialog": "^1.0.5",
     "@radix-ui/react-dropdown-menu": "^2.0.6",
@@ -37,6 +38,8 @@
     "zustand": "^4.5.2"
   },
   "devDependencies": {
+    "@liveblocks/client": "^1.11.3",
+    "@liveblocks/react": "^1.11.3",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
