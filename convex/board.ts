@@ -1,5 +1,5 @@
 
-import { mutation } from './_generated/server';
+import { mutation, query } from './_generated/server';
 import { v } from 'convex/values';
 
 const images = [
@@ -204,3 +204,26 @@ export const undoFavorite = mutation(
         }
     }
 )
+
+export const get = query({
+    args: {
+        boardId: v.id("boards")
+    },
+    handler: async(ctx, args) => {
+        // const identity = await ctx.auth.getUserIdentity()
+
+        // console.log("User identity : ",identity); //TODO: Find out why the identity is coming as NULL
+
+        // if(!identity){
+        //     throw new Error('Unauthorized!!')
+        // }
+
+        const board = ctx.db.get(args.boardId);
+
+        if(!board){
+            throw new Error("Board not found!!");
+        }
+
+        return board;
+    }
+})
