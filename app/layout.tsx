@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ConvexCLientProvider } from "@/provider/convex-client-provider";
 import { Toaster } from "@/components/ui/toaster";
+import { ModalProvider } from "@/provider/modal-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,9 +21,11 @@ export default function RootLayout({
       <html lang="en">
         <body className={inter.className}>
           <ConvexCLientProvider>
+            <Toaster />
+            <ModalProvider />
             {children}
           </ConvexCLientProvider>
-          <Toaster />
+          
         </body>
       </html>
   );
