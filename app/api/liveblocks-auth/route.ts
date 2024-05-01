@@ -16,11 +16,6 @@ export async function POST(req: NextRequest){
 
     const user = await currentUser();
 
-    console.log("AUTH_INFO : ", {
-        authorization,
-        user
-    })
-
     if(!auth || !currentUser){
         return NextResponse.json(
             {
@@ -37,13 +32,6 @@ export async function POST(req: NextRequest){
 
     const board = await convex.query(api.board.get, {boardId: room as Id<'boards'>});
 
-    console.log("Room and board info : ",{
-        room,
-        board,
-        boardOrgId: board?.orgId,
-        userOrgId: authorization.orgId
-    });
-    
 
     if(board?.orgId !== authorization.orgId){
         return NextResponse.json(
@@ -62,8 +50,6 @@ export async function POST(req: NextRequest){
         picture: user?.imageUrl
     }
 
-    console.log("User Info : ", {userInfo})
-
     const session = liveblocks.prepareSession(
         user?.id!,
         {
@@ -77,9 +63,5 @@ export async function POST(req: NextRequest){
 
     const {status, body} = await session.authorize();
 
-    console.log({status, body}, "ALLOWED")
-
-    return NextResponse.json(
-        body, {status: status}
-    )
+    return new Response(body, {status});
 }
