@@ -1,3 +1,8 @@
+'use client'
+
+interface InfoProps {
+
+}
 
 export const Info = () => {
     return (
@@ -20,7 +25,7 @@ export const Info = () => {
     );
 }
 
-Info.Skeleton = function InfoSkeleton() {
+export const InfoSkeleton = () => {
     return (
         <div
             className="

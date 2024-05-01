@@ -20,7 +20,7 @@ export const Participants = () => {
     );
 }
 
-Participants.Skeleton = function ParticipantsSkeleton() {
+export const ParticipantsSkeleton = () => {
     return (
         <div
         className="

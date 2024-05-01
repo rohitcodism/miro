@@ -58,7 +58,7 @@ export const Toolbar = () => {
 }
 
 
-Toolbar.Skeleton = function ToolbarSkeleton() {
+export const ToolbarSkeleton = () => {
     return (
         <div
             className="
