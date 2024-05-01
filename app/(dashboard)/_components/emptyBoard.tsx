@@ -10,8 +10,11 @@ import { useOrganization } from '@clerk/nextjs';
 import { useApiMutation } from '@/hooks/useApiMutation';
 import { Loader2 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
+import { useRouter } from 'next/navigation';
 
 function EmptyBoard() {
+
+    const router = useRouter();
 
     const { toast } = useToast();
 
@@ -24,18 +27,19 @@ function EmptyBoard() {
         if(!organization) return;
 
         try {
-            const result = await mutate(
+            const boardId = await mutate(
                 {
                     title: "Untitled",
                     orgId: organization.id
                 }
             )
 
-            if(result){
+            if(boardId){
                 toast({
                     title: "Success",
                     description: "New board created successfully",
                 })
+                router.push(`/board/${boardId}`)
             }else{
                 toast({
                     title: "Error",

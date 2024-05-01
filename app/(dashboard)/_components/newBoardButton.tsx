@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useState } from "react";
 import { DialogClose } from "@radix-ui/react-dialog";
+import { useRouter } from "next/navigation";
 
 interface NewBoardButtonProps {
     orgId: string,
@@ -30,6 +31,8 @@ export const NewBoardButton = (
         disabled
     }: NewBoardButtonProps
 ) => {
+
+    const router = useRouter();
 
     const { toast } = useToast();
 
@@ -58,6 +61,7 @@ export const NewBoardButton = (
                     title: "Success",
                     description: "New board created successfully",
                 })
+                router.push(`/board/${result}`)
             } else {
                 toast({
                     title: "Error",
