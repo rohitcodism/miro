@@ -37,8 +37,9 @@ function Hint({
                 >
                     <p
                         className='
-                            font-semibold
+                            font-medium
                             capitalize
+                            text-sm
                         '
                     >
                         {label}

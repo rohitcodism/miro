@@ -28,7 +28,7 @@ export const Canvas = ({
                 touch-none
             "
         >
-            <Info />
+            <Info boardId={boardId}/>
             <Participants />
             <Toolbar />
         </main>
