@@ -1,7 +1,7 @@
 import { Loader2 } from "lucide-react";
-import { Info } from "./Info";
-import { Participants } from "./Participants";
-import { Toolbar } from "./Toolbar";
+import { InfoSkeleton } from "./Info";
+import { ParticipantsSkeleton } from "./Participants";
+import { ToolbarSkeleton } from "./Toolbar";
 
 
 
@@ -20,9 +20,9 @@ export const CanvasLoading = () => {
         "
         >
             <Loader2 className="h-12 w-12 text-muted-foreground animate-spin" />
-            <Info.Skeleton />
-            <Participants.Skeleton />
-            <Toolbar.Skeleton />
+            <InfoSkeleton />
+            <ParticipantsSkeleton />
+            <ToolbarSkeleton />
         </main>
     );
 }
