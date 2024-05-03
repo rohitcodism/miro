@@ -1,3 +1,6 @@
+'use client'
+
+import { UserAvatar } from "./UserAvatar";
 
 export const Participants = () => {
     return (
