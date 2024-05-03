@@ -10,19 +10,11 @@ import { Button } from "@/components/ui/button";
 import { miroIcon } from "@/assets";
 import Link from "next/link";
 import Hint from "@/components/Hint";
-import {
-    Dialog,
-    DialogClose,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { FormEvent, useState } from "react";
 import { toast } from "@/components/ui/use-toast";
+import { Actions } from "@/components/Actions";
+import { Menu } from "lucide-react";
+import { useRenameModal } from "@/store/useRenameModal";
 
 interface InfoProps {
     boardId: string,
@@ -45,43 +37,13 @@ export const Info = ({
     boardId
 }: InfoProps) => {
 
+    const { onOpen } = useRenameModal();
+
     const editTitle = useMutation(api.board.editTitle)
 
     const boardData = useQuery(api.board.get, { boardId: boardId as Id<"boards"> }) //TODO: Learn about useQuery
 
-    const [formData, setFormData] = useState({ title: "" });
-
     if (!boardData) return <InfoSkeleton />;
-
-
-    const handleSave = (event: FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-
-        const newTitle = formData.title;
-
-        try {
-            editTitle({ id: boardData._id as Id<'boards'>, title: formData.title })
-
-                .then(() => toast({
-                    title: "Renamed!",
-                    description: `${boardData.title} board renamed to ${newTitle} board`
-                }))
-                .catch(() => toast({
-                    title: "Error!",
-                    description: `Something went wrong while renaming the ${boardData.title} board`,
-                    variant: 'destructive'
-                }))
-
-        } catch (error) {
-            toast({
-                title: "Error!",
-                description: `Something went wrong while renaming the ${boardData.title} board`,
-                variant: 'destructive'
-            })
-        }
-
-        formData.title = "";
-    };
 
     return (
         <div
@@ -99,7 +61,7 @@ export const Info = ({
             "
         >
             <Hint
-                label="Back to Home"
+                label="Go to boards"
                 side="bottom"
                 sideOffset={15}
             >
@@ -132,43 +94,46 @@ export const Info = ({
                 </Link>
             </Hint>
             <TextSeparator />
-            <Dialog>
-                <DialogTrigger>
-                    <Button
-                        variant={'board'}
-                        className="
-                    text-base
-                    font-semibold
-                    px-2
-                "
+            <Hint
+                label="Edit title"
+                side="bottom"
+                sideOffset={10}
+            >
+                <Button
+                    onClick={() => onOpen(boardData._id, boardData.title)}
+                    variant={'board'}
+                    className="
+                                text-base
+                                font-semibold
+                                mx-2
+                                truncate
+                            "
+                >
+                    {boardData.title}
+                </Button>
+            </Hint>
+            <TextSeparator />
+            <Actions
+                id={boardData._id}
+                title={boardData.title}
+                side="bottom"
+                sideOffset={10}
+            >
+                <div>
+                    <Hint
+                        label="Menu"
+                        side="bottom"
+                        sideOffset={10}
                     >
-                        {boardData.title}
-                    </Button>
-                </DialogTrigger>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>
-                            Rename board
-                        </DialogTitle>
-                    </DialogHeader>
-                    <form onSubmit={handleSave}>
-                                <div className="flex flex-col py-2 gap-y-4">
-                                    <Label>Title</Label>
-                                    <Input
-                                        id="title"
-                                        placeholder="New board title"
-                                        value={formData.title}
-                                        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                                    />
-                                    <DialogClose
-                                        onClick={(e) => e.stopPropagation()}
-                                    >
-                                        <Button type="submit">Save Changes</Button>
-                                    </DialogClose>
-                                </div>
-                            </form>
-                </DialogContent>
-            </Dialog>
+                        <Button
+                            size={'icon'}
+                            variant={'board'}
+                        >
+                            <Menu />
+                        </Button>
+                    </Hint>
+                </div>
+            </Actions>
         </div>
     );
 }

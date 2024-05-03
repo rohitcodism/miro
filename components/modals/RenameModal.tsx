@@ -11,7 +11,7 @@ import {
     DialogTitle
 } from '@/components/ui/dialog';
 import { useRenameModal } from '@/store/useRenameModal';
-import { FormEvent, FormEventHandler, useEffect, useState } from 'react';
+import { FormEventHandler, useEffect, useState } from 'react';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { useApiMutation } from '@/hooks/useApiMutation';

@@ -13,6 +13,7 @@ import { Button } from './ui/button';
 import { Dialog, DialogContent, DialogTitle } from './ui/dialog';
 import { DialogClose, DialogTrigger } from '@radix-ui/react-dialog';
 import { ConfirmModal } from './ConfirmModal';
+import { useRenameModal } from '@/store/useRenameModal';
 
 
 
@@ -34,44 +35,11 @@ export const Actions = (
     }: ActionProps
 ) => {
 
-    const editTitle = useMutation(api.board.editTitle)
+    const { onOpen } = useRenameModal();
 
     const { toast } = useToast();
 
     const remove = useMutation(api.board.remove);
-    const [formData, setFormData] = useState({ title: "" });
-
-    const handleSave = (event: FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-
-        const newTitle = formData.title;
-
-        try {
-            editTitle({ id: id as Id<'boards'>, title: formData.title })
-
-                .then(() => toast({
-                    title: "Renamed!",
-                    description: `${title} board renamed to ${newTitle} board`
-                }))
-                .catch(() => toast({
-                    title: "Error!",
-                    description: `Something went wrong while renaming the ${title} board`,
-                    variant: 'destructive'
-                }))
-
-        } catch (error) {
-            toast({
-                title: "Error!",
-                description: `Something went wrong while renaming the ${title} board`,
-                variant: 'destructive'
-            })
-        }
-
-        formData.title = "";
-    };
-
-
-
 
     const onCopyLink = () => {
         navigator.clipboard.writeText(
@@ -101,8 +69,7 @@ export const Actions = (
     }
 
     return (
-        <div className='absolute z-50 top-1 right-1'>
-            <Dialog>
+        <div className=' z-50 top-1 right-1'> {/* //TODO: Learn again about absolute property */}
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         {children}
@@ -142,50 +109,32 @@ export const Actions = (
                                 Copy board link
                             </div>
                         </DropdownMenuItem>
-                        <DialogTrigger
-                            className='w-full'
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            <Button
-                                variant={'ghost'}
-                                className='
+                        <DropdownMenuItem
+                            className='
                             p-3
                             cursor-pointer
-                            text-sm
-                            w-full
-                            justify-start
-                            font-normal
                         '
-                            >
-
-                                <div className="group flex items-center group-hover:text-red-500 transition-colors">
-                                    <Pencil className="h-4 w-4 mr-2" />
-                                    Rename
-                                </div>
-
-                            </Button>
-                        </DialogTrigger>
-                        <DialogContent
-                            onClick={(e) => e.stopPropagation()}
+                            onClick={() => onOpen(id, title)}
                         >
-                            <DialogTitle>Rename Board</DialogTitle>
-                            <form onSubmit={handleSave}>
-                                <div className="flex flex-col py-2 gap-y-4">
-                                    <Label>Title</Label>
-                                    <Input
-                                        id="title"
-                                        placeholder="New board title"
-                                        value={formData.title}
-                                        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                                    />
-                                    <DialogClose
-                                        onClick={(e) => e.stopPropagation()}
-                                    >
-                                        <Button type="submit">Save Changes</Button>
-                                    </DialogClose>
-                                </div>
-                            </form>
-                        </DialogContent>
+                            <div
+                                className='
+                                group 
+                                flex 
+                                items-center 
+                                group-hover:text-green-500 
+                                transition-colors
+                            '
+                            >
+                                <Pencil
+                                    className='
+                                h-4
+                                w-4
+                                mr-2
+                            '
+                                />
+                                Rename board
+                            </div>
+                        </DropdownMenuItem>
                         <ConfirmModal
                             header='Do you really want to delete this board ?'
                             description={`This will delete the ${title} board and all of its content`}
@@ -212,7 +161,6 @@ export const Actions = (
                         </ConfirmModal>
                     </DropdownMenuContent>
                 </DropdownMenu>
-            </Dialog>
         </div>
     );
 }
