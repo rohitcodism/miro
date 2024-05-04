@@ -1,3 +1,5 @@
+import { Circle, MousePointer2, Pencil, Redo2, Square, StickyNote, Type, Undo2 } from "lucide-react";
+import { ToolButton } from "./ToolButton";
 
 
 export const Toolbar = () => {
@@ -25,15 +27,48 @@ export const Toolbar = () => {
                     shadow-md
                 "
             >
-                <div>
-                    Pencil
-                </div>
-                <div>
-                    Square
-                </div>
-                <div>
-                    Circle
-                </div>
+                <ToolButton
+                    label="Select"
+                    icon={MousePointer2}
+                    onClickAction={() => { }}
+                    isActive={false}
+
+                />
+                <ToolButton
+                    label="Text"
+                    icon={Type}
+                    onClickAction={() => { }}
+                    isActive={false}
+
+                />
+                <ToolButton
+                    label="Sticky note"
+                    icon={StickyNote}
+                    onClickAction={() => { }}
+                    isActive={false}
+
+                />
+                <ToolButton
+                    label="Rectangle"
+                    icon={Square}
+                    onClickAction={() => { }}
+                    isActive={false}
+
+                />
+                <ToolButton
+                    label="Ellipse"
+                    icon={Circle}
+                    onClickAction={() => { }}
+                    isActive={false}
+
+                />
+                <ToolButton
+                    label="Pen"
+                    icon={Pencil}
+                    onClickAction={() => { }}
+                    isActive={false}
+
+                />
             </div>
             <div
                 className="
@@ -46,12 +81,21 @@ export const Toolbar = () => {
                     shadow-md
                 "
             >
-                <div>
-                    Undo
-                </div>
-                <div>
-                    Redo
-                </div>
+                <ToolButton
+                    label="Undo"
+                    icon={Undo2}
+                    onClickAction={() => { }}
+                    isActive={false}
+                    isDisabled={true}
+
+                />
+                <ToolButton
+                    label="Redo"
+                    icon={Redo2}
+                    onClickAction={() => { }}
+                    isActive={false}
+                    isDisabled={true}
+                />
             </div>
         </div>
     );
