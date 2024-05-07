@@ -1,13 +1,18 @@
 'use client'
 
-import { useHistory, useSelf, useCanUndo, useCanRedo, useMutation } from "@/liveblocks.config";
+import { useHistory, useSelf, useCanUndo, useCanRedo, useMutation, useStorage } from "@/liveblocks.config";
 import { Info } from "./Info";
 import { Participants } from "./Participants";
 import { Toolbar } from "./Toolbar";
 import React, { useCallback, useState } from "react";
-import { Camera, CanvasMode, CanvasState } from "@/Types/Canvas";
+import { Camera, CanvasMode, CanvasState, Color, LayerType, Point } from "@/Types/Canvas";
 import { CursorPresence } from "./CursorPresence";
 import { pointerEventToCanvasPoint } from "@/lib/utils";
+import { nanoid } from 'nanoid';
+import { LiveObject } from "@liveblocks/client";
+import { X } from "lucide-react";
+
+const MAX_LAYERS = 100;
 
 interface CanvasProps {
     boardId: string
@@ -18,13 +23,54 @@ export const Canvas = ({
     boardId
 }: CanvasProps) => {
 
-    const [camera, setCamera] = useState<Camera>({x: 0, y: 0});
+    const layerIds = useStorage((root) => root.layerIds);
+
+    const [lastUsedColor, setLastUsedColor] = useState<Color>({
+        r:0,
+        g: 0,
+        b: 0
+    })
+
+    const [camera, setCamera] = useState<Camera>({x: 0, y: 0}); //TODO: Study about how the camera is working
 
     const history = useHistory();
 
     const canUndo = useCanUndo();
 
     const canRedo = useCanRedo();
+
+    const insertLayer = useMutation((
+        {storage, setMyPresence},
+        layerType: LayerType.Ellipse | LayerType.Rectangle | LayerType.Note | LayerType.Text, 
+        position: Point
+    ) => {
+        const liveLayers = storage.get('layers');
+
+        if(liveLayers.size >= MAX_LAYERS){
+            return;
+        }
+
+        const layerIds = storage.get('layerIds');
+
+        const layerId = nanoid();
+
+        const layer = new LiveObject({
+            type: layerType,
+            x: position.x,
+            y: position.y,
+            height: 100,
+            width: 100,
+            fill: lastUsedColor
+        })
+
+        layerIds.push(layerId);
+
+        liveLayers.set(layerId, layer);
+
+        setMyPresence({ selection: [layerId] }, { addToHistory: true });
+        setCanvasState({mode: CanvasMode.none})
+
+    }, [lastUsedColor])
 
     const onWheel = useCallback((e: React.WheelEvent) => {
         setCamera((camera) => ({
@@ -82,7 +128,11 @@ export const Canvas = ({
                 onWheel={onWheel}
                 onPointerMove={onPointerMove}
             >
-                <g>
+                <g
+                    style={{
+                        transform: `translate(${camera.x}px, ${camera.y}px)`
+                    }}
+                >
                     <CursorPresence />
                 </g>
             </svg>
