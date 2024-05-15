@@ -10,7 +10,7 @@ import { CursorPresence } from "./CursorPresence";
 import { pointerEventToCanvasPoint } from "@/lib/utils";
 import { nanoid } from 'nanoid';
 import { LiveObject } from "@liveblocks/client";
-import { X } from "lucide-react";
+import { LayerPreview } from "./LayerPreview";
 
 const MAX_LAYERS = 100;
 
@@ -44,7 +44,7 @@ export const Canvas = ({
         layerType: LayerType.Ellipse | LayerType.Rectangle | LayerType.Note | LayerType.Text, 
         position: Point
     ) => {
-        const liveLayers = storage.get('layers');
+        const liveLayers = storage.get("layers");
 
         if(liveLayers.size >= MAX_LAYERS){
             return;
@@ -62,6 +62,8 @@ export const Canvas = ({
             width: 100,
             fill: lastUsedColor
         })
+
+        console.log("New layer is created : ",layer)
 
         layerIds.push(layerId);
 
@@ -97,6 +99,42 @@ export const Canvas = ({
         })
     }, [])
 
+    const onPointerUp = useMutation((
+            {},
+            e
+        ) => {
+
+            console.log("On pointer up is fired.")
+
+            const point = pointerEventToCanvasPoint(e, camera);
+
+            console.log("Canvas state is : ", CanvasMode[canvasState.mode])
+
+            console.log("Pointer is up : ",{
+                point,
+                mode: canvasState.mode === CanvasMode.Inserting ? "Inserting" : "none",
+            })
+
+            if(canvasState.mode === CanvasMode.Inserting){
+                insertLayer(canvasState.layerType, point);
+                console.log("Inserted layer",LayerType[canvasState.layerType]);
+                
+            } else {
+                setCanvasState({
+                    mode: CanvasMode.none
+                })
+            }
+
+            history.resume();
+        },
+        [
+            camera,
+            canvasState,
+            history,
+            insertLayer
+        ]
+    )
+
     const info = useSelf((me) => me.info);
 
     return(
@@ -122,17 +160,26 @@ export const Canvas = ({
             <svg
                 className="
                     h-[100vh]
-                    w-[100vw]
+                    w-[100vw] border-black border-2
                 "
                 onPointerLeave={onPointerLeave}
                 onWheel={onWheel}
                 onPointerMove={onPointerMove}
+                onPointerUp={onPointerUp}
             >
                 <g
                     style={{
-                        transform: `translate(${camera.x}px, ${camera.y}px)`
+                        transform: `translate(${camera.x}px, ${camera.y}px)`,
                     }}
                 >
+                    {layerIds.map((layerId) => (
+                        <LayerPreview 
+                            key={layerId}
+                            id={layerId}
+                            onLayerPointerDown={() => {}}
+                            selectionColor={"#000"}
+                        />
+                    ))}
                     <CursorPresence />
                 </g>
             </svg>
