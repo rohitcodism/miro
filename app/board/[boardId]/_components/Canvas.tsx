@@ -79,6 +79,48 @@ export const Canvas = ({
 
     }, [lastUsedColor])
 
+    const translateSelectedLayer = useMutation((
+        {self, storage},
+        point: Point
+    ) => {
+        if(canvasState.mode !== CanvasMode.Translating){
+            return;
+        }
+
+        const offset = {
+            x: point.x - canvasState.current.x,
+            y: point.y - canvasState.current.y
+        };
+
+        const liveLayers = storage.get("layers");
+
+        for(const id of self.presence.selection){
+            const layer = liveLayers.get(id);
+
+            if(layer){
+                layer.update({
+                    x: layer.get("x") + offset.x,
+                    y: layer.get("y") + offset.y
+                })
+            }
+        }
+
+        setCanvasState({
+            mode: CanvasMode.Translating,
+            current: point
+        })
+    },[
+        canvasState
+    ]);
+
+    const unSelectLayers = useMutation((
+        {self, setMyPresence}
+    ) => {
+        if(self.presence.selection.length > 0){
+            setMyPresence({ selection: [] }, { addToHistory: true });
+        }
+    }, [])
+
     const resizeSelectedLayer = useMutation((
         {storage, self},
         point: Point
@@ -100,7 +142,7 @@ export const Canvas = ({
         if(layer){
             layer.update(bounds)
         }
-    }, [canvasState])
+    }, [canvasState]);
 
     const onResizeHandlePointerDown = useCallback((
         corner: Side,
@@ -117,7 +159,7 @@ export const Canvas = ({
 
 
 
-    }, [history])
+    }, [history]);
 
     const onWheel = useCallback((e: React.WheelEvent) => {
         setCamera((camera) => ({
@@ -131,13 +173,18 @@ export const Canvas = ({
 
         const current = pointerEventToCanvasPoint(e, camera);
 
-        if(canvasState.mode === CanvasMode.Resizing){
+        if(canvasState.mode === CanvasMode.Translating){
+
+            translateSelectedLayer(current);
+        }
+
+        else if(canvasState.mode === CanvasMode.Resizing){
 
             resizeSelectedLayer(current)
         }
 
         setMyPresence({ cursor: current });
-    }, [canvasState, resizeSelectedLayer, camera])
+    }, [canvasState, resizeSelectedLayer, camera, translateSelectedLayer])
 
     const onPointerLeave = useMutation(({ setMyPresence }, e: React.PointerEvent) => {
         setMyPresence({
@@ -145,23 +192,39 @@ export const Canvas = ({
         })
     }, [])
 
+    const onPointerDown = useCallback((
+        e: React.PointerEvent
+    ) => {
+        const point = pointerEventToCanvasPoint(e,camera);
+
+        if(canvasState.mode === CanvasMode.Inserting){
+            return;
+        }
+
+        //TODO: Add case for drawing
+
+        setCanvasState({
+            mode: CanvasMode.Pressing,
+            origin: point
+        })
+    }, [camera, canvasState.mode, setCanvasState])
+
     const onPointerUp = useMutation((
             {},
             e
         ) => {
 
-            console.log("On pointer up is fired.")
-
             const point = pointerEventToCanvasPoint(e, camera);
 
-            console.log("Canvas state is : ", CanvasMode[canvasState.mode])
+            if(canvasState.mode === CanvasMode.none || canvasState.mode === CanvasMode.Pressing){
 
-            console.log("Pointer is up : ",{
-                point,
-                mode: canvasState.mode === CanvasMode.Inserting ? "Inserting" : "none",
-            })
+                unSelectLayers();
+                setCanvasState({
+                    mode: CanvasMode.none
+                })
+            }
 
-            if(canvasState.mode === CanvasMode.Inserting){
+            else if(canvasState.mode === CanvasMode.Inserting){
                 insertLayer(canvasState.layerType, point);
                 console.log("Inserted layer",LayerType[canvasState.layerType]);
                 
@@ -177,7 +240,8 @@ export const Canvas = ({
             camera,
             canvasState,
             history,
-            insertLayer
+            insertLayer,
+            unSelectLayers
         ]
     )
 
@@ -262,6 +326,7 @@ export const Canvas = ({
                 onWheel={onWheel}
                 onPointerMove={onPointerMove}
                 onPointerUp={onPointerUp}
+                onPointerDown={onPointerDown}
             >
                 <g
                     style={{

@@ -1,4 +1,6 @@
+import { CanvasState } from './../Types/Canvas';
 import { Camera, Color, Point, Side, XYWH } from "@/Types/Canvas";
+import { useMutation } from "@/liveblocks.config";
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge";
 
