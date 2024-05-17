@@ -1,4 +1,4 @@
-import { CanvasState, Layer } from './../Types/Canvas';
+import { CanvasState, Layer, LayerType, PathLayer } from './../Types/Canvas';
 import { Camera, Color, Point, Side, XYWH } from "@/Types/Canvas";
 import { useMutation } from "@/liveblocks.config";
 import { type ClassValue, clsx } from "clsx"
@@ -114,4 +114,73 @@ export function findIntersectingLayersWithRectangle(
 export function getContrastingTextColor (color: Color) {
   const luminense = 0.2126 * color.r + 0.7152 * color.g + 0.0722 * color.b;
   return luminense > 0.179 ? '#000000' : '#FFFFFF';
+}
+
+export function penPointToPathLayer (
+  points: number[][],
+  color: Color
+): PathLayer{
+  if(points.length < 2){
+    throw new Error("Cannot transform points with less than two points");
+  }
+
+  let left = Number.POSITIVE_INFINITY;
+  let top = Number.POSITIVE_INFINITY;
+  let right = Number.NEGATIVE_INFINITY;
+  let bottom = Number.NEGATIVE_INFINITY;
+
+  for(const point of points){
+    const [x, y] = point;
+
+    if(left > x){
+      left = x;
+    }
+    if(top > y){
+      top = y;
+    }
+    if(right < x){
+      right = x;
+    }
+    if(bottom < y){
+      bottom = y;
+    }
+  }
+
+  return {
+    type :LayerType.Path,
+    x:left,
+    y: top,
+    width: right-left,
+    height: bottom-top,
+    fill: color,
+    points: points.map(([x, y, pressure]) => [ x-left, y-top, pressure ])
+  }
+}
+
+export function getSvgPathFromStroke(stroke: number[][]){
+  if(!stroke.length) return "";
+
+  const d = stroke.reduce(
+    (acc, [x0, y0], i, arr) => {
+      const [x1, y1] = arr[(i+1) % arr.length]
+      acc.push(x0, y0, (x0 + x1) / 2, (y0 + y1) / 2);
+      return acc;
+    },
+    ["M", ...stroke[0], "Q"]
+  );
+
+  d.push("Z");
+  return d.join("");
+}
+
+import { getStroke } from 'perfect-freehand';
+
+export function getSvgPathFromStrokeCG(points: number[][]) {
+  if (!points || points.length === 0) return '';
+
+  const d = points.reduce((acc, [x, y], i) => {
+    return acc + `${i === 0 ? 'M' : 'L'}${x.toFixed(2)} ${y.toFixed(2)} `;
+  }, '');
+
+  return `${d}Z`;
 }
